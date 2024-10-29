@@ -137,6 +137,12 @@ New checks
   Finds cases when an uninstantiated virtual member function in a template class 
   causes cross-compiler incompatibility.
 
+- New :doc:`readability-use-explicit-namespaces
+  <clang-tidy/checks/readability/use-explicit-namespaces>` check.
+
+  Detect and fix references to members of namespaces where the namespace is
+  not explicity specified in the reference.
+
 New check aliases
 ^^^^^^^^^^^^^^^^^
 
