@@ -425,7 +425,6 @@ DbgVariableRecordsRemoveRedundantDbgInstrsUsingBackwardScan(BasicBlock *BB) {
       }
 
       ToBeRemoved.push_back(&DVR);
-      continue;
     }
     // Sequence with consecutive dbg.value instrs ended. Clear the map to
     // restart identifying redundant instructions if case we find another
@@ -887,7 +886,7 @@ BasicBlock *llvm::ehAwareSplitEdge(BasicBlock *BB, BasicBlock *Succ,
   if (LandingPadReplacement) {
     auto *NewLP = OriginalPad->clone();
     auto *Terminator = BranchInst::Create(Succ, NewBB);
-    NewLP->insertBefore(Terminator);
+    NewLP->insertBefore(Terminator->getIterator());
     LandingPadReplacement->addIncoming(NewLP, NewBB);
   } else {
     Value *ParentPad = nullptr;

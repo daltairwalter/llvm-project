@@ -78,7 +78,7 @@ void __attribute__((target_version("rdm+rng+crc"))) redef(void) {}
 
 int def(void);
 void __attribute__((target_version("dit"))) nodef(void);
-void __attribute__((target_version("ls64"))) nodef(void);
+void __attribute__((target_version("wfxt"))) nodef(void);
 void __attribute__((target_version("aes"))) ovl(void);
 void __attribute__((target_version("default"))) ovl(void);
 int bar() {
@@ -102,13 +102,17 @@ int __attribute__((target_version("sha2"))) combine(void) { return 1; }
 // expected-error@+1 {{multiversioned function declaration has a different calling convention}}
 int __attribute__((aarch64_vector_pcs, target_version("sha3"))) combine(void) { return 2; }
 
+// expected-error@+1 {{multiversioned function must have a prototype}}
 int __attribute__((target_version("fp+aes+rcpc"))) unspec_args() { return -1; }
 // expected-error@-1 {{multiversioned function must have a prototype}}
+// expected-note@+1 {{function multiversioning caused by this declaration}}
 int __attribute__((target_version("default"))) unspec_args() { return 0; }
 int cargs() { return unspec_args(); }
 
+// expected-error@+1 {{multiversioned function must have a prototype}}
 int unspec_args_implicit_default_first();
 // expected-error@-1 {{multiversioned function must have a prototype}}
 // expected-note@+1 {{function multiversioning caused by this declaration}}
 int __attribute__((target_version("aes"))) unspec_args_implicit_default_first() { return -1; }
+// expected-note@+1 {{function multiversioning caused by this declaration}}
 int __attribute__((target_version("default"))) unspec_args_implicit_default_first() { return 0; }

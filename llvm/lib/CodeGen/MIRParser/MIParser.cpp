@@ -21,7 +21,6 @@
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/StringSwitch.h"
 #include "llvm/ADT/Twine.h"
-#include "llvm/Analysis/MemoryLocation.h"
 #include "llvm/AsmParser/Parser.h"
 #include "llvm/AsmParser/SlotMapping.h"
 #include "llvm/CodeGen/MIRFormatter.h"
@@ -1317,9 +1316,10 @@ bool MIParser::parseMachineMetadata() {
 
     assert(PFS.MachineMetadataNodes[ID] == MD && "Tracking VH didn't work");
   } else {
-    if (PFS.MachineMetadataNodes.count(ID))
+    auto [It, Inserted] = PFS.MachineMetadataNodes.try_emplace(ID);
+    if (!Inserted)
       return error("Metadata id is already used");
-    PFS.MachineMetadataNodes[ID].reset(MD);
+    It->second.reset(MD);
   }
 
   return false;
@@ -1476,7 +1476,8 @@ bool MIParser::parseInstruction(unsigned &OpCode, unsigned &Flags) {
          Token.is(MIToken::kw_noconvergent) ||
          Token.is(MIToken::kw_unpredictable) ||
          Token.is(MIToken::kw_nneg) ||
-         Token.is(MIToken::kw_disjoint)) {
+         Token.is(MIToken::kw_disjoint) ||
+         Token.is(MIToken::kw_samesign)) {
     // clang-format on
     // Mine frame and fast math flags
     if (Token.is(MIToken::kw_frame_setup))
@@ -1513,6 +1514,8 @@ bool MIParser::parseInstruction(unsigned &OpCode, unsigned &Flags) {
       Flags |= MachineInstr::NonNeg;
     if (Token.is(MIToken::kw_disjoint))
       Flags |= MachineInstr::Disjoint;
+    if (Token.is(MIToken::kw_samesign))
+      Flags |= MachineInstr::SameSign;
 
     lex();
   }
