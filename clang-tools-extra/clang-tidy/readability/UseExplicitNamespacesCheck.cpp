@@ -437,7 +437,7 @@ bool doesContextIdMatch(const IdentifierInfo *contextId,
                         const QualifierScopeIdentifier &qualifier) {
   auto nestedId = qualifier.getIdentifier();
   return contextId && nestedId &&
-         contextId->getName().equals(nestedId->getName());
+         contextId->getName() == nestedId->getName();
 }
 
 bool findContextIdMatch(
